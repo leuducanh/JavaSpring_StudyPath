@@ -6,13 +6,18 @@
 	http://www.springframework.org/schema/context/spring-context-4.3.xsd"> 
 	
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-		<property name ="url" value="jdbc:derby:C:/Java/sampledb;create=true" />
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name ="url" value="jdbc:mysql://localhost:3306/sampledb" />
 		<property name="username" value="root"/>
 		<property name="password" value="Leu1234567"/>
 		</bean>
 		
+		
 		<bean id="studentJdbcDAO" class="thaythuan.springjdbc.StudentJdbcDAO" init-method="createTableIfNotExist">
 			<property name="dataSource" ref="dataSource"></property>
 		</bean>
+		
+		<bean id="studentDAO" class="edu.java.spring.dao.StudentDAO"/>
+		
+		<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 	</beans>

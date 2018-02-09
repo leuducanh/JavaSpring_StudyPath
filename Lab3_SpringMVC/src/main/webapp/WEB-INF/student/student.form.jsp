@@ -9,18 +9,18 @@
 </head>
 <body>
 	<h2>Please input student information</h2>
-	<form  action="/student/save" method="POST">
-	<form:hidden path="id"/>
+	<form method="POST" action="save" commandName="command">
+	<form:hidden path="command.id" />
 		<table>
 			<tr>
 				<td>Name:</td>
 				<!-- <td><input name="name" type="text"></td>-->
-				<td><form:input path="command.name"/><form:errors path="command.name"></form:errors></td>
+				<td><form:input  path="command.name"/><form:errors path="command.name"></form:errors></td>
 			</tr>
 			<tr>
 				<td>Age:</td>
 				<!--<td><input name="age" type="text"/></td>-->
-				<td><form:input path="command.age" type="number"/><form:errors path="command.age"/></td>
+				<td><form:input path="command.age"/><form:errors path="command.age"/></td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -29,8 +29,9 @@
 			</tr>
 		
 		</table>
-		
-		<c:if test="${id != null}">
+	</form>
+	
+	<c:if test="${id != null}">
 			<h1>Upload</h1>
 			<form method="post" action="/student/avatar/save" enctype="multipart/form-data">
 				<input type="hidden" name="id" value="${id}"/>
@@ -38,6 +39,6 @@
 				<input type="submit" value="Upload"/>
 			</form>
 		</c:if>
-	</form>
+	
 </body>
 </html>

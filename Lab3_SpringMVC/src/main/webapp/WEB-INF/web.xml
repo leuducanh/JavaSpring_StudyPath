@@ -15,4 +15,10 @@ xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
   	<url-pattern>/</url-pattern>
   </servlet-mapping>
   
+  <listener>
+  	<listener-class>
+  		edu.java.spring.AppContextLoaderListener
+  	</listener-class>
+  </listener>
+  
 </web-app>
