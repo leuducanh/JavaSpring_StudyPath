@@ -86,19 +86,13 @@ public class StudentJdbcDAO {
 		System.out.println("create  rec " + name + " " + age);
 	}
 	
-	
-	
 	public String getInsertQuery() {
 		return insertQuery;
 	}
 
-
-
 	public void setInsertQuery(String insertQuery) {
 		this.insertQuery = insertQuery;
 	}
-
-
 
 	public void setDataSource(DataSource dataSource){
 		this.dataSource = dataSource;

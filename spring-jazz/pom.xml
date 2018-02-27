@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>edu.hanoi</groupId>
-	<artifactId>spring-class</artifactId>
+	<groupId>edu.hanoi.jazz</groupId>
+	<artifactId>spring-jazz</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
 
-	<name>spring-class</name>
+	<name>spring-jazz</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
@@ -19,8 +19,6 @@
 	</parent>
 
 	<properties>
-    <!-- The main class to start by executing java -jar -->
-
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -31,8 +29,34 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-web</artifactId>
+</dependency>
 
 <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.9-rc</version>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-config</artifactId>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-taglibs</artifactId>
+</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter</artifactId>
     <exclusions>
@@ -47,31 +71,50 @@
     <artifactId>spring-boot-starter-log4j</artifactId>
     <version>1.3.8.RELEASE</version>
 </dependency>
-
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
 <dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-web</artifactId>
-    <version>5.0.1.RELEASE</version>
+    <groupId>org.apache.derby</groupId>
+    <artifactId>derby</artifactId>
+    <version>10.14.1.0</version>
+    <scope>test</scope>
 </dependency>
-
-<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
 <dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-config</artifactId>
-    </dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jdbc</artifactId>
+    <version>5.0.4.RELEASE</version>
+</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
 <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-
-
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-orm</artifactId>
+    <version>5.0.4.RELEASE</version>
+</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.2.13.Final</version>
+</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>6.0.7.Final</version>
+</dependency>
+		
+		
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
@@ -82,13 +125,18 @@
         <artifactId>tiles-extras</artifactId>
         <version>3.0.5</version>
     </dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-taglibs -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-taglibs</artifactId>
+</dependency>
 
 
 <dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 		</dependency>
-
+		
 	</dependencies>
 
 	<build>
@@ -97,19 +145,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
-			 <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.2</version>
-                <!-- Config: contextPath and Port (Default - /SpringMVCTiles : 8080) -->
-                <!--
-                     <configuration>
-                         <path>/</path>
-                         <port>8899</port>
-                     </configuration>
-                -->
-            </plugin>
 		</plugins>
 	</build>
 
