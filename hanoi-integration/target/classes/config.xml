@@ -1,0 +1,140 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:int="http://www.springframework.org/schema/integration"
+		xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
+		xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/integration
+		http://www.springframework.org/schema/integration/spring-integration-5.0.xsd
+		http://www.springframework.org/schema/integration/stream
+		http://www.springframework.org/schema/integration/stream/spring-integration-stream-5.0.xsd
+		http://www.springframework.org/schema/integration/jdbc
+		http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-5.0.xsd">
+	<context:component-scan base-package="edu.hanoi.message"/>
+	<int:channel id="helloChannel"/>
+	
+	<!-- <int:service-activator
+	input-channel="helloChannel" 
+	ref="helloService" method="say" 
+	output-channel="nullChannel"/> -->
+	 
+	<int:channel id="stdoutChannel"/>
+	<int-stream:stdout-channel-adapter
+	channel="stdoutChannel" append-newline="true"/>	
+		
+	<int:service-activator
+	input-channel="helloChannel" 
+	ref="helloService" method="say" 
+	output-channel="stdoutChannel"/> 
+	
+	<int:channel id="groupChannel"/>
+	<int:service-activator input-channel="groupChannel"
+		ref="groupService" method="add" 
+		output-channel="validateChannel"/>
+	
+	<int:channel id="validateChannel">
+		<int:queue capacity="5"/>
+	</int:channel>
+	
+	<!-- <int:outbound-channel-adapter channel="validateChannel">
+		<int:poller fixed-delay="1500" receive-timeout="10"/>
+	</int:outbound-channel-adapter> -->
+	
+	
+	
+	<int:service-activator input-channel="validateChannel" 
+		 ref="groupService"
+		method="validate">
+			<int:poller fixed-delay="50" receive-timeout="10"></int:poller>
+		</int:service-activator>
+	
+	<int-jdbc:outbound-channel-adapter 
+	id="dataChannel" 
+		query="insert into HN_GROUP(name) values(:payload.name)"
+		data-source="dataSource">
+		</int-jdbc:outbound-channel-adapter>
+		
+<!-- 		<int-jdbc:inbound-channel-adapter id="loadGroupChannel" 
+		query="select * from HN_GROUP where name like %abc%" data-source="dataSource"
+		row-mapper="groupRowMapper">
+		<int:poller default="true" fixed-rate="2">
+		</int:poller></int-jdbc:inbound-channel-adapter>
+		
+		
+		<int:channel id="loadGroupChannel"/>
+		<int:service-activator input-channel="loadGroupChannel"
+			ref="groupService" method="handleMessage"/> -->
+		
+		
+		<bean id="taskExecutor"
+		 class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		 	
+		 	<property name="corePoolSize" value="3"/>
+		 	<property name="maxPoolSize" value="5"/>
+		 	<property name="queueCapacity" value="10"/>
+		 </bean>
+		 
+		 <int:channel id="executorChannel">
+		 	<int:dispatcher task-executor="taskExecutor"/>
+		 </int:channel>
+		 
+		 <int:service-activator input-channel="executorChannel"
+		 	ref="groupToStringService" method="takeString" output-channel="stdoutChannel"/>
+		 	
+		 	<int:publish-subscribe-channel id="publishGroupChannel">
+		 	
+		 	</int:publish-subscribe-channel>
+		 	
+		 	<int:service-activator id="pushlishGroup1" input-channel="publishGroupChannel"
+		 	ref="groupService" method="add" output-channel="stdoutChannel"/>
+		 	<int:service-activator id="pushlishGroup2" input-channel="publishGroupChannel"
+		 	ref="groupService" method="add" output-channel="stdoutChannel"/>
+		
+		<int:gateway id="userService" service-interface="edu.hanoi.message.service.UserService" >
+				<int:method name="insert" request-channel="userRequestChannel1" reply-channel="userReplyChannel1" reply-timeout="2" request-timeout="3000"/>
+				<int:method name="query" request-channel="userRequestChannel2" reply-channel="userReplyChannel2" reply-timeout="2" request-timeout="3000"/>
+				<int:method name="loadGroup"  request-channel="loadGroupRequestChannel-input" reply-channel="loadGroupRequestChannel-output" reply-timeout="2" request-timeout="3000"/>
+			</int:gateway>
+			
+		<int:channel id="userRequestChannel1"/>		
+		<int:channel id="userReplyChannel1"/>		
+		<!-- gate way userService sẽ sử dụng interface để kích hoạt userdaoimpl -->
+		<int:service-activator input-channel="userRequestChannel1" ref="userDAOImpl"  output-channel="userReplyChannel1" method="insert"/>
+		
+		<int:channel id="userRequestChannel2"/>	
+		<int:channel id="userReplyChannel2"/>	
+		<int:service-activator input-channel="userRequestChannel2" ref="userDAOImpl" output-channel="userReplyChannel2" method="query"/>
+		 
+		 
+		 <int:channel id="loadGroupRequestChannel-input"/>
+		 <int:channel id="loadGroupRequestChannel-output"/>
+		<int:service-activator input-channel="loadGroupRequestChannel-input"  ref="userDAOForGroup" method="loadGroup" output-channel="loadGroupRequestChannel-output">
+			
+		</int:service-activator>
+		 
+		<int:channel id="groupRequestChannel"/>
+		<int:service-activator input-channel="groupRequestChannel"  ref="userDAOForGroup" method="loadGroup">
+			
+		</int:service-activator>
+		
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name ="url" value="jdbc:mysql://localhost:3306/sampledb" />
+		<property name="username" value="root"/>
+		<property name="password" value="Leu1234567"/>
+	</bean>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	<property name="dataSource" ref="dataSource"></property>
+	<property name="hibernateProperties">
+		<props>
+			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+		</props>
+	</property>
+	<property name="packagesToScan" value="edu.hanoi.message"></property>
+	
+</bean>
+</beans>

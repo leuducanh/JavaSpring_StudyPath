@@ -1,0 +1,11 @@
+edu\hanoi\message\dao\GroupDAO.class
+edu\hanoi\message\dao\GroupRowMapper.class
+edu\hanoi\message\test\ClassClientTest.class
+edu\hanoi\message\service\HelloService.class
+edu\hanoi\message\model\Group.class
+edu\hanoi\message\controller\HelloController.class
+edu\hanoi\message\dao\GroupDAOImpl.class
+edu\hanoi\message\hanoiintegration\HanoiIntegrationApplication.class
+edu\hanoi\message\service\GroupToStringService.class
+edu\hanoi\message\controller\GroupController.class
+edu\hanoi\message\service\GroupService.class
