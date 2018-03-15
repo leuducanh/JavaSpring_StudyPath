@@ -4,6 +4,7 @@
 		xmlns:int="http://www.springframework.org/schema/integration"
 		xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
 		xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+		xmlns:task="http://www.springframework.org/schema/task"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 		http://www.springframework.org/schema/context
@@ -13,9 +14,13 @@
 		http://www.springframework.org/schema/integration/stream
 		http://www.springframework.org/schema/integration/stream/spring-integration-stream-5.0.xsd
 		http://www.springframework.org/schema/integration/jdbc
-		http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-5.0.xsd">
+		http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-5.0.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task.xsd">
 	<context:component-scan base-package="edu.hanoi.message"/>
 	<int:channel id="helloChannel"/>
+	
+	<task:executor id="groupExecutor" pool-size="5"/>
 	
 	<!-- <int:service-activator
 	input-channel="helloChannel" 
@@ -52,22 +57,23 @@
 			<int:poller fixed-delay="50" receive-timeout="10"></int:poller>
 		</int:service-activator>
 	
-	<int-jdbc:outbound-channel-adapter 
+	 <int-jdbc:outbound-channel-adapter 
 	id="dataChannel" 
-		query="insert into HN_GROUP(name) values(:payload.name)"
+		query="insert into HN_GROUP(name) values(:payload)"
 		data-source="dataSource">
-		</int-jdbc:outbound-channel-adapter>
+		</int-jdbc:outbound-channel-adapter> 
 		
-<!-- 		<int-jdbc:inbound-channel-adapter id="loadGroupChannel" 
+	<!-- 	<int-jdbc:inbound-channel-adapter id="loadGroupChannel" 
 		query="select * from HN_GROUP where name like %abc%" data-source="dataSource"
 		row-mapper="groupRowMapper">
 		<int:poller default="true" fixed-rate="2">
-		</int:poller></int-jdbc:inbound-channel-adapter>
+		</int:poller></int-jdbc:inbound-channel-adapter> -->
 		
-		
+<!-- 		
 		<int:channel id="loadGroupChannel"/>
 		<int:service-activator input-channel="loadGroupChannel"
 			ref="groupService" method="handleMessage"/> -->
+		
 		
 		
 		<bean id="taskExecutor"
@@ -98,12 +104,24 @@
 				<int:method name="insert" request-channel="userRequestChannel1" reply-channel="userReplyChannel1" reply-timeout="2" request-timeout="3000"/>
 				<int:method name="query" request-channel="userRequestChannel2" reply-channel="userReplyChannel2" reply-timeout="2" request-timeout="3000"/>
 				<int:method name="loadGroup"  request-channel="loadGroupRequestChannel-input" reply-channel="loadGroupRequestChannel-output" reply-timeout="2" request-timeout="3000"/>
+				<!-- insertGroupRequestChannel --><int:method name="insertGroup"  request-channel= "groupRouterChannel" reply-channel="dataChannel-output" reply-timeout="3000" request-timeout="3000"/>
+				<!-- validateGroupNameInputChannel --><int:method name="addGroup"  request-channel="groupsChannel" reply-channel="validateGroupNameInputChannel-output" reply-timeout="3000" request-timeout="3000"/>
+				<int:method name="addUser"  request-channel="addUserChannel" reply-channel="addUserChannel-output" reply-timeout="3000" request-timeout="3000"/>
 			</int:gateway>
 			
-		<int:channel id="userRequestChannel1"/>		
+			<int:channel id="addUserChannel"/>
+			<int:channel id="userRequestChannelSingle"/>
+			<int:splitter input-channel="addUserChannel" ref="groupFactory" method="toList" output-channel="userAggrChannel"/>
+			<int:channel id="userAggrChannel"/>
+			<int:aggregator ref="userFactory" method="create" input-channel="userAggrChannel" output-channel="userRequestChannelSingle"/>
+					<int:service-activator input-channel="userRequestChannelSingle" ref="userDAO" method="insert">
+					</int:service-activator>
+			
+			
+	<int:channel id="userRequestChannel1"/>		
 		<int:channel id="userReplyChannel1"/>		
-		<!-- gate way userService sẽ sử dụng interface để kích hoạt userdaoimpl -->
-		<int:service-activator input-channel="userRequestChannel1" ref="userDAOImpl"  output-channel="userReplyChannel1" method="insert"/>
+<!-- 		gate way userService sẽ sử dụng interface để kích hoạt userdaoimpl -->
+		<int:service-activator input-channel="userRequestChannel1" ref="userDAOImpl"  output-channel="userReplyChannel1" method="insert"/> 
 		
 		<int:channel id="userRequestChannel2"/>	
 		<int:channel id="userReplyChannel2"/>	
@@ -115,11 +133,40 @@
 		<int:service-activator input-channel="loadGroupRequestChannel-input"  ref="userDAOForGroup" method="loadGroup" output-channel="loadGroupRequestChannel-output">
 			
 		</int:service-activator>
+		
+		 <int:channel id="insertGroupRequestChannel">
+		 	<int:dispatcher task-executor="groupExecutor"/>
+		 </int:channel>
+		 <int:channel id="dataChannel-output"/>
+		<int:service-activator input-channel="insertGroupRequestChannel"  ref="groupDAO" method="add" output-channel="validateGroupNameInputChannel-output">
+			
+		</int:service-activator>
 		 
 		<int:channel id="groupRequestChannel"/>
 		<int:service-activator input-channel="groupRequestChannel"  ref="userDAOForGroup" method="loadGroup">
 			
 		</int:service-activator>
+		
+		<int:channel id="groupNameInputChannel"/>
+		<int:transformer  ref="groupFactory" method="create" input-channel="groupNameInputChannel" output-channel="insertGroupRequestChannel" />
+		
+		<int:channel id="validateGroupNameInputChannel"/>
+		<int:channel id="validateGroupNameInputChannel-output"/>
+		<int:filter ref="groupFactory" method="validate" throw-exception-on-rejection="true"
+		input-channel="validateGroupNameInputChannel" output-channel="groupNameInputChannel"/>
+		
+		<int:channel id="groupsChannel"/>
+		<int:splitter input-channel="groupsChannel" ref="groupFactory" method="toList" output-channel="validateGroupNameInputChannel"/>
+		
+		<int:channel id="groupRouterChannel"/>
+		
+		<!-- <int:payload-type-router input-channel="groupRouterChannel" default-output-channel="stdoutChannel" >
+			<int:mapping type="java.lang.String" channel="validateGroupNameInputChannel"/>
+			<int:mapping type="edu.hanoi.message.model.Group" channel="insertGroupRequestChannel"/>
+		</int:payload-type-router> -->
+		
+		<int:router ref="groupFactory" method="routeGroup" input-channel="groupRouterChannel" default-output-channel="stdoutChannel"/>
+				
 		
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>

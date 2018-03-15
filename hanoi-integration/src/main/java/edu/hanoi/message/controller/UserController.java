@@ -41,9 +41,15 @@ public class UserController {
 		return userService.loadGroup(name);
 	}
 	
+	@GetMapping(value="/user/add/{name}")
+	public String addByName(@PathVariable String name){
+		return userService.addUser(name);
+	}
+	
 	@PostMapping(value="/user/add/group/")
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public void insertGroup(@RequestBody Group group){
-		userService.insertGroup(group);
+	public String insertGroup(@RequestBody Group group){
+		return userService.insertGroup(group) + "";
+		
 	}
 }

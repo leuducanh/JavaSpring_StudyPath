@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="spring-int-common/src/main/java"/>
+	<classpathentry kind="src" path="spring-int-common/src/test/java"/>
+	<classpathentry kind="src" path="spring-int-data/src/main/java"/>
+	<classpathentry kind="src" path="spring-int-data/src/test/java"/>
+	<classpathentry kind="src" path="spring-int-interface/src/main/java"/>
+	<classpathentry kind="src" path="spring-int-interface/src/test/java"/>
+	<classpathentry kind="lib" path="spring-int-common/.mvn/wrapper/maven-wrapper.jar"/>
+	<classpathentry kind="lib" path="spring-int-data/.mvn/wrapper/maven-wrapper.jar"/>
+	<classpathentry kind="lib" path="spring-int-interface/.mvn/wrapper/maven-wrapper.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -12,7 +12,7 @@ import edu.hanoi.message.model.User;
 public class ClassClientTest {
 
 	public static void main(String[] args) {
-		String address = "http://localhost:10526/user/add";
+		String address = "http://localhost:10526/group/add/aaaa987,bbbb877";
 		
 		HttpClientBuilder builder = HttpClientBuilder.create();
 		CloseableHttpClient httpClient = builder.build();
@@ -25,9 +25,12 @@ public class ClassClientTest {
 //			System.out.println("From server " + insertEntity.getBody());
 //
 //		}
-		User user = new User("heersew", "a", "sd", 12, 2);
-		ResponseEntity<String> insertEntity = restTemplate.postForEntity(address, user, String.class);
-		System.out.println("From server " + insertEntity.getBody());
+//		User user = new User("sweff", "a", "sd", 12, 2);
+//		for(int i= 0;i<20;i++){
+//			Group g = new Group(1,"uoa" + i);
+			ResponseEntity<String> insertEntity = restTemplate.getForEntity(address, null, String.class);
+//			System.out.println("From server " + insertEntity.getBody());
+//		}
 		
 	}
 }

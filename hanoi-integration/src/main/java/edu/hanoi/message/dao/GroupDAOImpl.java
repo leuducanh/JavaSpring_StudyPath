@@ -3,6 +3,7 @@ package edu.hanoi.message.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,21 +20,25 @@ import edu.hanoi.message.model.Group;
 @Component("groupDAO")
 public class GroupDAOImpl implements GroupDAO{
 
+	Logger log = Logger.getLogger(GroupDAOImpl.class);
 	@Autowired
 	SessionFactory sessionFatory;
 	
 	@Override
-	public int add(Group group) {
+	public Integer add(Group group) {
 		Session session = (Session) sessionFatory.openSession();
 
+		log.info(Thread.currentThread().getName() + "--addGroup " + group.getName());
+		
 		try{
 			session.beginTransaction();
 			int i = Integer.parseInt(session.save(group).toString());
 			session.getTransaction().commit();
-			return i;	
+			return new Integer(i);	
 		}finally {
 			session.close();
 		}
+		
 	}
 
 	@Override

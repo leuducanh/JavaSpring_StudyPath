@@ -19,6 +19,8 @@ import edu.hanoi.message.service.UserService;
 @Service("userDAOImpl")
 public class UserDAOImpl {
 
+	
+	
 	@Autowired
 	public SessionFactory sessionFactory;
 	
