@@ -5,6 +5,8 @@
 		xmlns:int-stream="http://www.springframework.org/schema/integration/stream"
 		xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
 		xmlns:task="http://www.springframework.org/schema/task"
+		xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+		xmlns:oxm="http://http://www.springframework.org/schema/oxm"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
 		http://www.springframework.org/schema/context
@@ -15,8 +17,22 @@
 		http://www.springframework.org/schema/integration/stream/spring-integration-stream-5.0.xsd
 		http://www.springframework.org/schema/integration/jdbc
 		http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc-5.0.xsd
+		http://www.springframework.org/schema/integration/jms
+		http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+		http://http://www.springframework.org/schema/oxm
+		http://http://www.springframework.org/schema/oxm/spring-oxm.xsd
 		http://www.springframework.org/schema/task
 		http://www.springframework.org/schema/task/spring-task.xsd">
-	<context:component-scan base-package="edu.java.data.model"/>
+	<context:component-scan base-package="edu.java.data.springintdata"/>
+	<int:channel id="groupChannel"/>
+  	<bean id="connectionFatory"  class="org.apache.activemq.ActiveMQConnectionFactory">
+  		<property name="brokerURL" value="tcp://localhost:61616"></property>
+  	</bean> 
+  	
+  	<int-jms:message-driven-channel-adapter id="messageDrivenAdapter" channel="groupChannel" destination-name="groupTopic" 
+  	 pub-sub-domain="true"/>
+  	 
+  	 <int:service-activator input-channel="groupChannel" ref="groupDAO" method="insert" output-channel="stdoutChannel"/>
+  	 <int:channel id="stdoutChannel"/>
 
 </beans>

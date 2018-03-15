@@ -45,6 +45,45 @@
 	<artifactId>spring-int-common</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
+				<!-- https://mvnrepository.com/artifact/org.springframework/spring-oxm -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-oxm</artifactId>
+    <version>5.0.4.RELEASE</version>
+</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jms -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-jms</artifactId>
+    <version>5.0.4.RELEASE</version>
+</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-jms -->
+<dependency>
+    <groupId>org.springframework.integration</groupId>
+    <artifactId>spring-integration-jms</artifactId>
+    <version>5.0.3.RELEASE</version>
+</dependency>
+		<!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-jaxrs -->
+<dependency>
+    <groupId>org.codehaus.jackson</groupId>
+    <artifactId>jackson-jaxrs</artifactId>
+    <version>1.9.13</version>
+</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-core -->
+<dependency>
+    <groupId>org.apache.activemq</groupId>
+    <artifactId>activemq-core</artifactId>
+    <version>5.7.0</version>
+</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-stream -->
+<dependency>
+    <groupId>org.springframework.integration</groupId>
+    <artifactId>spring-integration-stream</artifactId>
+    <version>5.0.3.RELEASE</version>
+</dependency>
+		
+		
 	</dependencies>
 
 	<build>
